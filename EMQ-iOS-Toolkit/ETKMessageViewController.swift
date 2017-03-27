@@ -7,9 +7,11 @@
 //
 
 import UIKit
+import CocoaMQTT
 
 class ETKMessageViewController: UIViewController {
     
+    @IBOutlet weak var blackMask: UIView!
     @IBOutlet weak var blurView: UIVisualEffectView!
     @IBOutlet weak var configureView: UIView!
     @IBOutlet weak var handleView: UIView!
@@ -27,9 +29,19 @@ class ETKMessageViewController: UIViewController {
     private var blurViewCollapseDistance: CGFloat = 0.0
     private var blurViewCollapsed = false
     
+    // mqtt
+    var mqtt: CocoaMQTT?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let myCode = ShortCodeGenerator.getCode(length: 6)
+        let clientID = "EMQ-iOS-Client-\(myCode)"
+        
+        // initialize mqtt
+        mqtt = CocoaMQTT(clientID: clientID, host: "localhost", port: 1883)
+        mqtt!.delegate = self
         
         // for split view controller
         navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
@@ -46,8 +58,20 @@ class ETKMessageViewController: UIViewController {
         blurViewOriginalY = blurView.frame.origin.y
         blurViewYThreshold = blurViewCollapseDistance * 0.372
         
-//        handleView.backgroundColor = #colorLiteral(red: 0.8824566007, green: 0.2664997876, blue: 0.3519365788, alpha: 1)
-//        handleView.backgroundColor = #colorLiteral(red: 0.3620333076, green: 0.8608141541, blue: 0.4826943278, alpha: 1)
+        blurView.addObserver(self, forKeyPath: "center", options: [.old, .new], context: nil)
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath! == "center" {
+            let y = blurView.frame.origin.y
+            var alpha = (1 - (blurViewOriginalY - y) / blurViewCollapseDistance) * 0.3
+            if alpha < 0 { alpha = 0 } else if alpha > 0.3 {alpha = 0.3}
+            blackMask.alpha = alpha
+        }
+    }
+    
+    @IBAction func onConnectButtonClicked(_ sender: UIButton) {
+        mqtt!.connect()
     }
     
     // MARK: - UX of blur view
@@ -99,6 +123,76 @@ class ETKMessageViewController: UIViewController {
             break
         }
     }
-    
-    
 }
+
+
+extension ETKMessageViewController: CocoaMQTTDelegate {
+    func mqtt(_ mqtt: CocoaMQTT, didConnect host: String, port: Int) {
+        print("didConnect \(host):\(port)")
+    }
+    
+    // Optional ssl CocoaMQTTDelegate
+    func mqtt(_ mqtt: CocoaMQTT, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Void) {
+        completionHandler(true)
+    }
+    
+    func mqtt(_ mqtt: CocoaMQTT, didConnectAck ack: CocoaMQTTConnAck) {
+        print("didConnectAck: \(ack)，rawValue: \(ack.rawValue)")
+        handleView.backgroundColor = #colorLiteral(red: 0.3620333076, green: 0.8608141541, blue: 0.4826943278, alpha: 1)
+    }
+    
+    func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
+        print("didPublishMessage with message: \(message.string)")
+    }
+    
+    func mqtt(_ mqtt: CocoaMQTT, didPublishAck id: UInt16) {
+        print("didPublishAck with id: \(id)")
+    }
+    
+    func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16 ) {
+        print("didReceivedMessage: \(message.string) with id \(id)")
+    }
+    
+    func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopic topic: String) {
+        print("didSubscribeTopic to \(topic)")
+    }
+    
+    func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopic topic: String) {
+        print("didUnsubscribeTopic to \(topic)")
+    }
+    
+    func mqttDidPing(_ mqtt: CocoaMQTT) {
+        print("didPing")
+    }
+    
+    func mqttDidReceivePong(_ mqtt: CocoaMQTT) {
+        _console("didReceivePong")
+    }
+    
+    func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError err: Error?) {
+        _console("mqttDidDisconnect")
+        handleView.backgroundColor = #colorLiteral(red: 0.8824566007, green: 0.2664997876, blue: 0.3519365788, alpha: 1)
+    }
+    
+    func _console(_ info: String) {
+        print("Delegate: \(info)")
+    }
+}
+
+
+struct ShortCodeGenerator {
+    
+    private static let base62chars = [Character]("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".characters)
+    private static let maxBase : UInt32 = 62
+    
+    static func getCode(withBase base: UInt32 = maxBase, length: Int) -> String {
+        var code = ""
+        for _ in 0..<length {
+            let random = Int(arc4random_uniform(min(base, maxBase)))
+            code.append(base62chars[random])
+        }
+        return code
+    }
+}
+
+
