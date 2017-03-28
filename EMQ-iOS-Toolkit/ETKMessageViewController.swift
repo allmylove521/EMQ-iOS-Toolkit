@@ -21,6 +21,10 @@ class ETKMessageViewController: UIViewController {
     @IBOutlet weak var portTextField: UITextField!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var connectButton: UIButton!
+    
+    @IBOutlet weak var messagesTableView: UITableView!
+    @IBOutlet weak var publishTextField: UITextField!
     
     // constriants
     @IBOutlet weak var heightConstraint: NSLayoutConstraint!
@@ -50,6 +54,8 @@ class ETKMessageViewController: UIViewController {
         return mqtt
     }()
     
+    // message
+    var messages:[CocoaMQTTMessage] = []
     
     
     override func viewDidLoad() {
@@ -92,6 +98,11 @@ class ETKMessageViewController: UIViewController {
         meta?.userName = usernameTextField.text!
         meta?.password = passwordTextField.text!
         
+        mqtt.host = meta!.host
+        mqtt.port = UInt16(meta!.port)!
+        mqtt.username = meta!.userName
+        mqtt.password = meta!.password
+        
         meta?.sync()
     }
     
@@ -112,7 +123,18 @@ class ETKMessageViewController: UIViewController {
     
     @IBAction func onConnectButtonClicked(_ sender: UIButton) {
         updateMetaFromUI()
-        mqtt.connect()
+
+        if mqtt.connState == .connected  {
+            mqtt.disconnect()
+        } else {
+            mqtt.connect()
+        }
+    }
+    
+    @IBAction func onPublishButtonClicked(_ sender: Any) {
+        let text = publishTextField.text!
+        mqtt.publish("animals", withString: text)
+        publishTextField.text = nil
     }
     
     // MARK: - UX of blur view
@@ -147,12 +169,7 @@ class ETKMessageViewController: UIViewController {
             }
             
             // animate
-            topConstraint.constant = toCollapse ? topConstraintValueCollapse : topConstraintValueOriginal
-            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: {
-                self.blurView.superview?.layoutIfNeeded()
-            }, completion: { finished in
-                self.blurViewCollapsed = toCollapse
-            })
+            animateBlurView(toCollapse)
             
             break
             
@@ -163,6 +180,15 @@ class ETKMessageViewController: UIViewController {
         default:
             break
         }
+    }
+    
+    func animateBlurView(_ toCollapse: Bool) {
+        topConstraint.constant = toCollapse ? topConstraintValueCollapse : topConstraintValueOriginal
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: {
+            self.blurView.superview?.layoutIfNeeded()
+        }, completion: { finished in
+            self.blurViewCollapsed = toCollapse
+        })
     }
 }
 
@@ -180,6 +206,12 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     func mqtt(_ mqtt: CocoaMQTT, didConnectAck ack: CocoaMQTTConnAck) {
         print("didConnectAck: \(ack)，rawValue: \(ack.rawValue)")
         handleView.backgroundColor = #colorLiteral(red: 0.3620333076, green: 0.8608141541, blue: 0.4826943278, alpha: 1)
+        
+        // change button UI
+        connectButton.backgroundColor = #colorLiteral(red: 0.8824566007, green: 0.2664997876, blue: 0.3519365788, alpha: 1)
+        connectButton.setTitle("Disconnect", for: .normal)
+        
+        mqtt.subscribe("animals")
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
@@ -192,6 +224,11 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     
     func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16 ) {
         print("didReceivedMessage: \(message.string) with id \(id)")
+        
+        messages.append(message)
+        let indexPath = IndexPath(row: messages.count - 1, section: 0)
+        messagesTableView.insertRows(at: [indexPath], with: .none)
+        messagesTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopic topic: String) {
@@ -213,11 +250,32 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError err: Error?) {
         _console("mqttDidDisconnect")
         handleView.backgroundColor = #colorLiteral(red: 0.8824566007, green: 0.2664997876, blue: 0.3519365788, alpha: 1)
+        animateBlurView(false)
+        
+        // change button UI
+        connectButton.backgroundColor = #colorLiteral(red: 0.1797867119, green: 0.7414731383, blue: 0.8447360396, alpha: 1)
+        connectButton.setTitle("Connect", for: .normal)
     }
     
     func _console(_ info: String) {
         print("Delegate: \(info)")
     }
+}
+
+extension ETKMessageViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return messages.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "message")
+        let message = messages[indexPath.row]
+        let content = message.string!
+        cell!.textLabel!.text = "[\(message.topic)] \(content)"
+        return cell!
+    }
+    
 }
 
 
