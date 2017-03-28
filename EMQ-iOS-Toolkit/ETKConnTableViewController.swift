@@ -1,5 +1,5 @@
 //
-//  ETKConnectionTableViewController.swift
+//  ETKConnTableViewController.swift
 //  EMQ-iOS-Toolkit
 //
 //  Created by Alex Yu on 22/03/2017.
@@ -8,38 +8,32 @@
 
 import UIKit
 
-class ETKConnectionTableViewController: UITableViewController, UISplitViewControllerDelegate {
+class ETKConnTableViewController: UITableViewController, UISplitViewControllerDelegate {
     
     private var collapseDetailViewController = true
-    var connections = [ETKConnectionMeta]()
+    
+    // shadow of metas
+    private(set) var connections: [ETKConnMeta] {
+        get {
+            return ETKConnMetaManager.sharedManager.metas
+        }
+        set {
+            
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         splitViewController?.delegate = self
         
         // Uncomment the following line to preserve selection between presentations
-         self.clearsSelectionOnViewWillAppear = false
+        self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-        
-        let meta1 = ETKConnectionMeta()
-        meta1.displayName = "Local Host"
-        
-        let meta2 = ETKConnectionMeta()
-        meta2.displayName = "EMQ test server"
-        
-        let meta3 = ETKConnectionMeta()
-        meta3.displayName = "Jason's Mac"
-        
-        connections.append(meta1)
-        connections.append(meta2)
-        connections.append(meta3)
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func viewDidAppear(_ animated: Bool) {
     }
 
     // MARK: - Table view data source
@@ -60,30 +54,51 @@ class ETKConnectionTableViewController: UITableViewController, UISplitViewContro
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "connection", for: indexPath)
-        cell.textLabel!.text = connections[indexPath.row].displayName
+        let meta = connections[indexPath.row]
+        
+        let name = meta.displayName.isEmpty ? meta.host : meta.displayName
+        cell.textLabel!.text = name
+        
+        meta.updateAction = { [weak meta] () -> () in
+            let name = (meta?.displayName.isEmpty)! ? meta?.host : meta?.displayName
+            cell.textLabel!.text = name
+        }
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         collapseDetailViewController = false
+        
+        // If select adding cell
+        if indexPath.row == connections.count {
+            _ = ETKConnMetaManager.sharedManager.createMeta()
+            tableView.insertRows(at: [indexPath], with: .left)
+            
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
+            
+            let sender = tableView.cellForRow(at: indexPath)
+            self.performSegue(withIdentifier: "cellDetail", sender: sender)
+        }
     }
     
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
+        if indexPath.row == connections.count {
+            return false
+        }
         return true
     }
-
     
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Delete the row from the data source
+            ETKConnMetaManager.sharedManager.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+        }
     }
     
     // MARK: - UISplitViewControllerDelegate
@@ -92,14 +107,13 @@ class ETKConnectionTableViewController: UITableViewController, UISplitViewContro
         return collapseDetailViewController;
     }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        let destinationVC = segue.destination as! UINavigationController
+        let detailVC: ETKMessageViewController = destinationVC.topViewController as! ETKMessageViewController
+        
+        let cell = sender as! UITableViewCell
+        let indexPath = tableView.indexPath(for: cell)
+        detailVC.meta = connections[(indexPath?.row)!]
     }
-    */
 
 }

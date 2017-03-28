@@ -11,14 +11,22 @@ import CocoaMQTT
 
 class ETKMessageViewController: UIViewController {
     
+    // views
     @IBOutlet weak var blackMask: UIView!
     @IBOutlet weak var blurView: UIVisualEffectView!
-    @IBOutlet weak var configureView: UIView!
     @IBOutlet weak var handleView: UIView!
     
+    @IBOutlet weak var displayNameTextField: UITextField!
+    @IBOutlet weak var serverTextField: UITextField!
+    @IBOutlet weak var portTextField: UITextField!
+    @IBOutlet weak var usernameTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    
+    // constriants
     @IBOutlet weak var heightConstraint: NSLayoutConstraint!
     @IBOutlet weak var topConstraint: NSLayoutConstraint!
     
+    // gestures
     @IBOutlet var panGestureRecognizer: UIPanGestureRecognizer!
     
     // to set blur view position
@@ -29,19 +37,23 @@ class ETKMessageViewController: UIViewController {
     private var blurViewCollapseDistance: CGFloat = 0.0
     private var blurViewCollapsed = false
     
-    // mqtt
-    var mqtt: CocoaMQTT?
+    // mqtt & meta
+    open var meta: ETKConnMeta?
     
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
+    lazy var mqtt: CocoaMQTT = {
         let myCode = ShortCodeGenerator.getCode(length: 6)
         let clientID = "EMQ-iOS-Client-\(myCode)"
         
         // initialize mqtt
-        mqtt = CocoaMQTT(clientID: clientID, host: "localhost", port: 1883)
-        mqtt!.delegate = self
+        let mqtt = CocoaMQTT(clientID: clientID, host: self.meta!.host, port: UInt16(self.meta!.port)!)
+        mqtt.delegate = self
+        return mqtt
+    }()
+    
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
         // for split view controller
         navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
@@ -59,6 +71,28 @@ class ETKMessageViewController: UIViewController {
         blurViewYThreshold = blurViewCollapseDistance * 0.372
         
         blurView.addObserver(self, forKeyPath: "center", options: [.old, .new], context: nil)
+        
+        // sync UI with meta
+        displayNameTextField.text = meta?.displayName
+        serverTextField.text = meta?.host
+        portTextField.text = meta?.port
+        usernameTextField.text = meta?.userName
+        passwordTextField.text = meta?.password
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        updateMetaFromUI()
+    }
+    
+    private func updateMetaFromUI() {
+        meta?.displayName = displayNameTextField.text!
+        meta?.host = serverTextField.text!
+        meta?.port = portTextField.text!
+        meta?.userName = usernameTextField.text!
+        meta?.password = passwordTextField.text!
+        
+        meta?.sync()
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -70,8 +104,15 @@ class ETKMessageViewController: UIViewController {
         }
     }
     
+    deinit {
+        if blurView != nil {
+            blurView.removeObserver(self, forKeyPath: "center", context: nil)
+        }
+    }
+    
     @IBAction func onConnectButtonClicked(_ sender: UIButton) {
-        mqtt!.connect()
+        updateMetaFromUI()
+        mqtt.connect()
     }
     
     // MARK: - UX of blur view

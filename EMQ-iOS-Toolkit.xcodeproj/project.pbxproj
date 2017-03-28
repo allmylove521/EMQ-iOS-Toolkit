@@ -14,8 +14,8 @@
 		FA5A55481E81203400E22DB0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA5A55471E81203400E22DB0 /* Assets.xcassets */; };
 		FA5A554B1E81203400E22DB0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA5A55491E81203400E22DB0 /* LaunchScreen.storyboard */; };
 		FA5A55561E81203400E22DB0 /* EMQ_iOS_ToolkitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5A55551E81203400E22DB0 /* EMQ_iOS_ToolkitTests.swift */; };
-		FAD148AC1E824AEF002587E0 /* ETKConnectionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD148AB1E824AEF002587E0 /* ETKConnectionTableViewController.swift */; };
-		FAD148AE1E824FEE002587E0 /* ETKConnectionMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD148AD1E824FEE002587E0 /* ETKConnectionMeta.swift */; };
+		FAD148AC1E824AEF002587E0 /* ETKConnTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD148AB1E824AEF002587E0 /* ETKConnTableViewController.swift */; };
+		FAD148AE1E824FEE002587E0 /* ETKConntMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD148AD1E824FEE002587E0 /* ETKConntMeta.swift */; };
 		FAD148B01E825D4A002587E0 /* ETKMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD148AF1E825D4A002587E0 /* ETKMessageViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -45,8 +45,8 @@
 		FA5A55511E81203400E22DB0 /* EMQ-iOS-ToolkitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "EMQ-iOS-ToolkitTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA5A55551E81203400E22DB0 /* EMQ_iOS_ToolkitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EMQ_iOS_ToolkitTests.swift; sourceTree = "<group>"; };
 		FA5A55571E81203400E22DB0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FAD148AB1E824AEF002587E0 /* ETKConnectionTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ETKConnectionTableViewController.swift; sourceTree = "<group>"; };
-		FAD148AD1E824FEE002587E0 /* ETKConnectionMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ETKConnectionMeta.swift; sourceTree = "<group>"; };
+		FAD148AB1E824AEF002587E0 /* ETKConnTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ETKConnTableViewController.swift; sourceTree = "<group>"; };
+		FAD148AD1E824FEE002587E0 /* ETKConntMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ETKConntMeta.swift; sourceTree = "<group>"; };
 		FAD148AF1E825D4A002587E0 /* ETKMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ETKMessageViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -113,9 +113,9 @@
 		FA5A553F1E81203400E22DB0 /* EMQ-iOS-Toolkit */ = {
 			isa = PBXGroup;
 			children = (
-				FAD148AB1E824AEF002587E0 /* ETKConnectionTableViewController.swift */,
+				FAD148AB1E824AEF002587E0 /* ETKConnTableViewController.swift */,
 				FAD148AF1E825D4A002587E0 /* ETKMessageViewController.swift */,
-				FAD148AD1E824FEE002587E0 /* ETKConnectionMeta.swift */,
+				FAD148AD1E824FEE002587E0 /* ETKConntMeta.swift */,
 				FA5A55601E8248CD00E22DB0 /* Supporting Files */,
 			);
 			path = "EMQ-iOS-Toolkit";
@@ -346,9 +346,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAD148AE1E824FEE002587E0 /* ETKConnectionMeta.swift in Sources */,
+				FAD148AE1E824FEE002587E0 /* ETKConntMeta.swift in Sources */,
 				FAD148B01E825D4A002587E0 /* ETKMessageViewController.swift in Sources */,
-				FAD148AC1E824AEF002587E0 /* ETKConnectionTableViewController.swift in Sources */,
+				FAD148AC1E824AEF002587E0 /* ETKConnTableViewController.swift in Sources */,
 				FA5A55411E81203400E22DB0 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
