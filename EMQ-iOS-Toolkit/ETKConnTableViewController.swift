@@ -58,6 +58,7 @@ class ETKConnTableViewController: UITableViewController, UISplitViewControllerDe
         
         let name = meta.displayName.isEmpty ? meta.host : meta.displayName
         cell.textLabel!.text = name
+        cell.detailTextLabel!.text = "topics: \(meta.subscriptions.description)"
         
         meta.updateAction = { [weak meta] () -> () in
             let name = (meta?.displayName.isEmpty)! ? meta?.host : meta?.displayName

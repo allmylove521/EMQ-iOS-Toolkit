@@ -14,6 +14,7 @@ class ETKConnMeta: NSObject, NSCoding {
     open var port = "1883"
     open var userName = ""
     open var password = ""
+    open var subscriptions = [String]()
     
     open var updateAction: (() -> ())?
     
@@ -24,6 +25,7 @@ class ETKConnMeta: NSObject, NSCoding {
         port = aDecoder.decodeObject(forKey: "port") as! String
         userName = aDecoder.decodeObject(forKey: "userName") as! String
         password = aDecoder.decodeObject(forKey: "password") as! String
+        subscriptions = aDecoder.decodeObject(forKey: "subscriptions") as! [String]
     }
     
     func encode(with aCoder: NSCoder) {
@@ -32,6 +34,7 @@ class ETKConnMeta: NSObject, NSCoding {
         aCoder.encode(port, forKey: "port")
         aCoder.encode(userName, forKey: "userName")
         aCoder.encode(password, forKey: "password")
+        aCoder.encode(subscriptions, forKey: "subscriptions")
     }
     
     open func sync() {

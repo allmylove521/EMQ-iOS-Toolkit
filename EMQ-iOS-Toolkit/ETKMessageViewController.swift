@@ -21,7 +21,11 @@ class ETKMessageViewController: UIViewController {
     @IBOutlet weak var portTextField: UITextField!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var topicTextField: UITextField!
+    @IBOutlet weak var publishView: UIView!
+    
     @IBOutlet weak var connectButton: UIButton!
+    @IBOutlet weak var subscriptButton: UIButton!
     
     @IBOutlet weak var messagesTableView: UITableView!
     @IBOutlet weak var publishTextField: UITextField!
@@ -29,6 +33,7 @@ class ETKMessageViewController: UIViewController {
     // constriants
     @IBOutlet weak var heightConstraint: NSLayoutConstraint!
     @IBOutlet weak var topConstraint: NSLayoutConstraint!
+    @IBOutlet weak var publishViewBottomConstraint: NSLayoutConstraint!
     
     // gestures
     @IBOutlet var panGestureRecognizer: UIPanGestureRecognizer!
@@ -57,13 +62,16 @@ class ETKMessageViewController: UIViewController {
     // message
     var messages:[CocoaMQTTMessage] = []
     
-    
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // for split view controller
         navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         navigationItem.leftItemsSupplementBackButton = true
+        
+        //
+        subscriptButton.isEnabled = false
 
         // configure style
         blurView.layer.cornerRadius = 12
@@ -71,7 +79,7 @@ class ETKMessageViewController: UIViewController {
         
         // vars for blur view animation
         topConstraintValueOriginal = topConstraint.constant
-        blurViewCollapseDistance = topConstraintValueOriginal + heightConstraint.constant - 44
+        blurViewCollapseDistance = topConstraintValueOriginal + heightConstraint.constant - 34
         topConstraintValueCollapse = topConstraintValueOriginal - blurViewCollapseDistance
         blurViewOriginalY = blurView.frame.origin.y
         blurViewYThreshold = blurViewCollapseDistance * 0.372
@@ -84,6 +92,41 @@ class ETKMessageViewController: UIViewController {
         portTextField.text = meta?.port
         usernameTextField.text = meta?.userName
         passwordTextField.text = meta?.password
+        topicTextField.text = meta?.subscriptions.first
+        
+        // notification from keyboard
+        NotificationCenter.default.addObserver(self, selector:#selector(keyboardWillChangeFrame(notification:)), name:NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
+    }
+    
+    func keyboardWillChangeFrame(notification: NSNotification) {
+        if let userInfo = notification.userInfo {
+            let endFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+            let duration:TimeInterval = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+            let animationCurveRawNSN = userInfo[UIKeyboardAnimationCurveUserInfoKey] as? NSNumber
+            let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIViewAnimationOptions.curveEaseInOut.rawValue
+            let animationCurve:UIViewAnimationOptions = UIViewAnimationOptions(rawValue: animationCurveRaw)
+            
+            var const: CGFloat = 0
+            
+            if (endFrame?.origin.y)! < UIScreen.main.bounds.size.height && publishTextField.isFirstResponder {
+                const = endFrame?.size.height ?? 0.0
+            }
+            
+            self.publishViewBottomConstraint?.constant = const
+            
+            UIView.animate(withDuration: duration,
+                           delay: TimeInterval(0),
+                           options: animationCurve,
+                           animations: { self.view.layoutIfNeeded() },
+                           completion: nil)
+        }
+    }
+    
+    deinit {
+        if blurView != nil {
+            blurView.removeObserver(self, forKeyPath: "center", context: nil)
+        }
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -97,6 +140,7 @@ class ETKMessageViewController: UIViewController {
         meta?.port = portTextField.text!
         meta?.userName = usernameTextField.text!
         meta?.password = passwordTextField.text!
+        meta?.subscriptions = [topicTextField.text!]
         
         mqtt.host = meta!.host
         mqtt.port = UInt16(meta!.port)!
@@ -115,10 +159,8 @@ class ETKMessageViewController: UIViewController {
         }
     }
     
-    deinit {
-        if blurView != nil {
-            blurView.removeObserver(self, forKeyPath: "center", context: nil)
-        }
+    @IBAction func onCleanSessionSwitchValueChanged(_ sender: UISwitch) {
+        mqtt.cleanSession = sender.isOn
     }
     
     @IBAction func onConnectButtonClicked(_ sender: UIButton) {
@@ -128,6 +170,14 @@ class ETKMessageViewController: UIViewController {
             mqtt.disconnect()
         } else {
             mqtt.connect()
+        }
+    }
+    
+    @IBAction func onSubscriptButtonClicked(_ sender: Any) {
+        if subscriptButton.title(for: .normal) == "Subscript" {
+            mqtt.subscribe(topicTextField.text!)
+        } else {
+            mqtt.unsubscribe(topicTextField.text!)
         }
     }
     
@@ -211,7 +261,8 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         connectButton.backgroundColor = #colorLiteral(red: 0.8824566007, green: 0.2664997876, blue: 0.3519365788, alpha: 1)
         connectButton.setTitle("Disconnect", for: .normal)
         
-        mqtt.subscribe("animals")
+        // subscript button enable
+        subscriptButton.isEnabled = true
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
@@ -224,7 +275,6 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     
     func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16 ) {
         print("didReceivedMessage: \(message.string) with id \(id)")
-        
         messages.append(message)
         let indexPath = IndexPath(row: messages.count - 1, section: 0)
         messagesTableView.insertRows(at: [indexPath], with: .none)
@@ -233,10 +283,15 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     
     func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopic topic: String) {
         print("didSubscribeTopic to \(topic)")
+        topicTextField.isEnabled = false
+        subscriptButton.setTitle("Unsubscrip", for: .normal)
+        self.animateBlurView(true)
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopic topic: String) {
         print("didUnsubscribeTopic to \(topic)")
+        subscriptButton.setTitle("Subscrip", for: .normal)
+        topicTextField.isEnabled = true
     }
     
     func mqttDidPing(_ mqtt: CocoaMQTT) {
@@ -255,10 +310,25 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         // change button UI
         connectButton.backgroundColor = #colorLiteral(red: 0.1797867119, green: 0.7414731383, blue: 0.8447360396, alpha: 1)
         connectButton.setTitle("Connect", for: .normal)
+        
+        // subscript button enable
+        subscriptButton.isEnabled = false
+        subscriptButton.setTitle("Unsubscrip", for: .normal)
     }
     
     func _console(_ info: String) {
         print("Delegate: \(info)")
+    }
+}
+
+extension ETKMessageViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+//        if textField == publishTextField {
+//            onPublishButtonClicked(textField)
+//        } else {
+            textField.resignFirstResponder()
+//        }
+        return true
     }
 }
 
@@ -272,7 +342,13 @@ extension ETKMessageViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "message")
         let message = messages[indexPath.row]
         let content = message.string!
-        cell!.textLabel!.text = "[\(message.topic)] \(content)"
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        let timeString = formatter.string(from: Date())
+        
+        cell!.textLabel!.text = content
+        cell!.detailTextLabel!.text = "#\(message.topic) - \(timeString)"
         return cell!
     }
     
