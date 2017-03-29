@@ -11,6 +11,10 @@ import CocoaMQTT
 
 class ETKMessageViewController: UIViewController {
     
+    // Constants
+    let subscriptTitle = "Subscript"
+    let unsubscriptTitle = "Unsubscript"
+    
     // views
     @IBOutlet weak var blackMask: UIView!
     @IBOutlet weak var blurView: UIVisualEffectView!
@@ -174,7 +178,7 @@ class ETKMessageViewController: UIViewController {
     }
     
     @IBAction func onSubscriptButtonClicked(_ sender: Any) {
-        if subscriptButton.title(for: .normal) == "Subscript" {
+        if subscriptButton.title(for: .normal) == subscriptTitle {
             mqtt.subscribe(topicTextField.text!)
         } else {
             mqtt.unsubscribe(topicTextField.text!)
@@ -263,6 +267,7 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         
         // subscript button enable
         subscriptButton.isEnabled = true
+        subscriptButton.setTitle(subscriptTitle, for: .normal)
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
@@ -284,13 +289,13 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopic topic: String) {
         print("didSubscribeTopic to \(topic)")
         topicTextField.isEnabled = false
-        subscriptButton.setTitle("Unsubscrip", for: .normal)
+        subscriptButton.setTitle(unsubscriptTitle, for: .normal)
         self.animateBlurView(true)
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopic topic: String) {
         print("didUnsubscribeTopic to \(topic)")
-        subscriptButton.setTitle("Subscrip", for: .normal)
+        subscriptButton.setTitle(subscriptTitle, for: .normal)
         topicTextField.isEnabled = true
     }
     
@@ -313,7 +318,7 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         
         // subscript button enable
         subscriptButton.isEnabled = false
-        subscriptButton.setTitle("Unsubscrip", for: .normal)
+        subscriptButton.setTitle(unsubscriptTitle, for: .normal)
     }
     
     func _console(_ info: String) {
