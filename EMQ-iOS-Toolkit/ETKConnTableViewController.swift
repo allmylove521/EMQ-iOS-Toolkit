@@ -12,6 +12,8 @@ class ETKConnTableViewController: UITableViewController, UISplitViewControllerDe
     
     private var collapseDetailViewController = true
     
+    private let metaToControllerMap = NSMapTable<ETKConnMeta, UIViewController>.weakToStrongObjects()
+    
     // shadow of metas
     private(set) var connections: [ETKConnMeta] {
         get {
@@ -75,12 +77,26 @@ class ETKConnTableViewController: UITableViewController, UISplitViewControllerDe
         if indexPath.row == connections.count {
             _ = ETKConnMetaManager.sharedManager.createMeta()
             tableView.insertRows(at: [indexPath], with: .left)
-            
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
-            
-            let sender = tableView.cellForRow(at: indexPath)
-            self.performSegue(withIdentifier: "cellDetail", sender: sender)
         }
+        
+        // create or reuse detail view controller
+        let meta = connections[indexPath.row]
+        var naviVC: UINavigationController? = nil
+        
+        if let obj = metaToControllerMap.object(forKey: meta) {
+            naviVC = obj as? UINavigationController
+        } else {
+            let sb = UIStoryboard(name: "Main", bundle: Bundle.main)
+            naviVC = sb.instantiateViewController(withIdentifier: "detailNavi") as? UINavigationController
+            metaToControllerMap.setObject(naviVC, forKey: meta)
+        }
+        
+        let detailVC = naviVC!.viewControllers.first as! ETKMessageViewController
+        
+        detailVC.meta = meta
+        
+        self.showDetailViewController(naviVC!, sender: self)
     }
     
     // Override to support conditional editing of the table view.
@@ -106,15 +122,6 @@ class ETKConnTableViewController: UITableViewController, UISplitViewControllerDe
     
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
         return collapseDetailViewController;
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let destinationVC = segue.destination as! UINavigationController
-        let detailVC: ETKMessageViewController = destinationVC.topViewController as! ETKMessageViewController
-        
-        let cell = sender as! UITableViewCell
-        let indexPath = tableView.indexPath(for: cell)
-        detailVC.meta = connections[(indexPath?.row)!]
     }
 
 }

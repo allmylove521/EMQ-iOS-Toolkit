@@ -433,7 +433,7 @@
         <!--Navigation Controller-->
         <scene sceneID="nZ7-hO-mTJ">
             <objects>
-                <navigationController id="CkR-iA-wsL" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="detailNavi" id="CkR-iA-wsL" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Q7J-Uo-tcP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -478,9 +478,6 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="CkR-iA-wsL" kind="showDetail" identifier="cellDetail" id="WGI-9b-yXe"/>
-                                </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="add" rowHeight="64" id="iQH-wf-a15">
                                 <rect key="frame" x="0.0" y="92" width="320" height="64"/>
