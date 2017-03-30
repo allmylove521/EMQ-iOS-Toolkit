@@ -114,10 +114,16 @@ class ETKMessageViewController: UIViewController {
             let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIViewAnimationOptions.curveEaseInOut.rawValue
             let animationCurve:UIViewAnimationOptions = UIViewAnimationOptions(rawValue: animationCurveRaw)
             
-            var const: CGFloat = 0
+            // conditions
+            let keyboardUp = (endFrame?.origin.y)! < UIScreen.main.bounds.size.height
+            let shouldPubViewUp = keyboardUp && publishTextField.isFirstResponder
             
-            if (endFrame?.origin.y)! < UIScreen.main.bounds.size.height && publishTextField.isFirstResponder {
+            // publish view move
+            var const: CGFloat = 0
+            if shouldPubViewUp {
                 const = endFrame?.size.height ?? 0.0
+            } else {
+                const = 0
             }
             
             self.publishViewBottomConstraint?.constant = const
@@ -127,6 +133,17 @@ class ETKMessageViewController: UIViewController {
                            options: animationCurve,
                            animations: { self.view.layoutIfNeeded() },
                            completion: nil)
+            
+            // message table view content inset bottoms
+            let insetBottom = shouldPubViewUp ? (endFrame?.size.height ?? 0.0) : 0
+            messagesTableView.contentInset.bottom = insetBottom
+            
+            if shouldPubViewUp {
+                if messages.count > 0 {
+                    let indexPath = IndexPath(row: messages.count - 1, section: 0)
+                    messagesTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+                }
+            }
         }
     }
     
@@ -328,7 +345,7 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         
         // subscript button enable
         subscriptButton.isEnabled = false
-        subscriptButton.setTitle(unsubscriptTitle, for: .normal)
+        subscriptButton.setTitle(subscriptTitle, for: .normal)
     }
     
     func _console(_ info: String) {
