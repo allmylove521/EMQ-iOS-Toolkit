@@ -26,13 +26,17 @@ class ETKMessageViewController: UIViewController {
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var topicTextField: UITextField!
-    @IBOutlet weak var publishView: UIView!
+    
+    @IBOutlet weak var messagesTableView: UITableView!
     
     @IBOutlet weak var connectButton: UIButton!
     @IBOutlet weak var subscriptButton: UIButton!
+    @IBOutlet weak var subscriptQosSegmentControl: UISegmentedControl!
     
-    @IBOutlet weak var messagesTableView: UITableView!
+    @IBOutlet weak var publishView: UIView!
     @IBOutlet weak var publishTextField: UITextField!
+    @IBOutlet weak var publishQosSegmentControl: UISegmentedControl!
+    
     
     // constriants
     @IBOutlet weak var heightConstraint: NSLayoutConstraint!
@@ -179,7 +183,9 @@ class ETKMessageViewController: UIViewController {
     
     @IBAction func onSubscriptButtonClicked(_ sender: Any) {
         if subscriptButton.title(for: .normal) == subscriptTitle {
-            mqtt.subscribe(topicTextField.text!)
+            let qosRaw = subscriptQosSegmentControl.selectedSegmentIndex
+            let qos = CocoaMQTTQOS(rawValue: UInt8(qosRaw))!
+            mqtt.subscribe(topicTextField.text!,  qos: qos)
         } else {
             mqtt.unsubscribe(topicTextField.text!)
         }
@@ -187,7 +193,11 @@ class ETKMessageViewController: UIViewController {
     
     @IBAction func onPublishButtonClicked(_ sender: Any) {
         let text = publishTextField.text!
-        mqtt.publish("animals", withString: text)
+        let topic = topicTextField.text!
+        let qosRaw = publishQosSegmentControl.selectedSegmentIndex
+        let qos = CocoaMQTTQOS(rawValue: UInt8(qosRaw))!
+        
+        mqtt.publish(topic, withString: text, qos: qos)
         publishTextField.text = nil
     }
     
