@@ -56,12 +56,12 @@
                                 </connections>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oZs-VR-iX9">
-                                <rect key="frame" x="217" y="577" width="158" height="42"/>
+                                <rect key="frame" x="0.0" y="577" width="375" height="42"/>
                                 <subviews>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="qRS-Pl-lav">
-                                        <rect key="frame" x="42" y="6" width="108" height="29"/>
+                                        <rect key="frame" x="287" y="6" width="80" height="29"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="108" id="GEE-zP-vY5"/>
+                                            <constraint firstAttribute="width" constant="80" id="GEE-zP-vY5"/>
                                         </constraints>
                                         <segments>
                                             <segment title="0"/>
@@ -71,19 +71,30 @@
                                         <color key="tintColor" red="0.39607843139999999" green="0.40000000000000002" blue="0.4039215686" alpha="1" colorSpace="calibratedRGB"/>
                                     </segmentedControl>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="QoS" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gej-W7-FBX">
-                                        <rect key="frame" x="8" y="18" width="26" height="16"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                        <rect key="frame" x="266.5" y="23" width="18.5" height="11"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                         <color key="textColor" red="0.39607843139999999" green="0.40000000000000002" blue="0.4039215686" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q3w-aU-Wk0">
+                                        <rect key="frame" x="219.5" y="6" width="35" height="30"/>
+                                        <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
+                                        <state key="normal" title="topic">
+                                            <color key="titleColor" red="0.2274509804" green="0.36470588240000001" blue="0.43529411759999997" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="onPublishTopicButtonClicked:" destination="AZ9-BT-jWu" eventType="touchUpInside" id="NnS-Uj-fF4"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
-                                <color key="backgroundColor" white="1" alpha="0.90000000000000002" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="1" alpha="0.5" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstItem="qRS-Pl-lav" firstAttribute="leading" secondItem="gej-W7-FBX" secondAttribute="trailing" constant="8" id="65g-Hl-hc8"/>
-                                    <constraint firstItem="gej-W7-FBX" firstAttribute="leading" secondItem="oZs-VR-iX9" secondAttribute="leading" constant="8" id="HSd-fp-4S4"/>
+                                    <constraint firstItem="qRS-Pl-lav" firstAttribute="leading" secondItem="gej-W7-FBX" secondAttribute="trailing" constant="2" id="65g-Hl-hc8"/>
+                                    <constraint firstItem="q3w-aU-Wk0" firstAttribute="centerY" secondItem="oZs-VR-iX9" secondAttribute="centerY" id="GIF-l4-MYD"/>
                                     <constraint firstAttribute="bottom" secondItem="qRS-Pl-lav" secondAttribute="bottom" constant="8" id="SPc-qj-bPh"/>
                                     <constraint firstAttribute="trailing" secondItem="qRS-Pl-lav" secondAttribute="trailing" constant="8" id="Wsh-9N-NtR"/>
                                     <constraint firstItem="gej-W7-FBX" firstAttribute="bottom" secondItem="qRS-Pl-lav" secondAttribute="bottom" id="bLL-Cl-nR8"/>
+                                    <constraint firstItem="gej-W7-FBX" firstAttribute="leading" secondItem="q3w-aU-Wk0" secondAttribute="trailing" constant="12" id="c7A-Zw-KD8"/>
                                     <constraint firstAttribute="height" constant="42" id="oHk-Cw-8AA"/>
                                 </constraints>
                             </view>
@@ -128,7 +139,7 @@
                                     <constraint firstItem="MZZ-fr-DcJ" firstAttribute="centerY" secondItem="hwK-dH-co6" secondAttribute="centerY" id="usS-mr-fZn"/>
                                 </constraints>
                             </view>
-                            <view userInteractionEnabled="NO" alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uQb-Ab-2Tp">
+                            <view alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uQb-Ab-2Tp">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             </view>
@@ -385,6 +396,7 @@
                             <constraint firstAttribute="trailing" secondItem="hwK-dH-co6" secondAttribute="trailing" id="crE-Ob-Bmt"/>
                             <constraint firstItem="hwK-dH-co6" firstAttribute="leading" secondItem="LxU-gW-nKk" secondAttribute="leading" id="i7k-Va-v16"/>
                             <constraint firstItem="rtj-Cm-Iqg" firstAttribute="top" secondItem="aBe-vO-Rs6" secondAttribute="bottom" constant="44" id="iQv-7h-t7e"/>
+                            <constraint firstItem="oZs-VR-iX9" firstAttribute="leading" secondItem="hwK-dH-co6" secondAttribute="leading" id="oQj-E3-53Q"/>
                             <constraint firstItem="1FO-Xo-kkx" firstAttribute="top" secondItem="hwK-dH-co6" secondAttribute="bottom" id="oeW-iw-gAx"/>
                             <constraint firstItem="hwK-dH-co6" firstAttribute="top" secondItem="oZs-VR-iX9" secondAttribute="bottom" constant="-2" id="oii-bV-oCf"/>
                         </constraints>
@@ -403,6 +415,7 @@
                         <outlet property="portTextField" destination="F0K-mM-tzA" id="vji-Gf-Zg5"/>
                         <outlet property="publishQosSegmentControl" destination="qRS-Pl-lav" id="8c6-IH-B8L"/>
                         <outlet property="publishTextField" destination="l0Q-5A-cQx" id="QBA-nz-AtZ"/>
+                        <outlet property="publishTopicButton" destination="q3w-aU-Wk0" id="t9A-7a-vTu"/>
                         <outlet property="publishView" destination="hwK-dH-co6" id="ONa-ee-T0w"/>
                         <outlet property="publishViewBottomConstraint" destination="oeW-iw-gAx" id="FrX-F0-Jll"/>
                         <outlet property="serverTextField" destination="enQ-LH-mS4" id="exH-f5-UoS"/>

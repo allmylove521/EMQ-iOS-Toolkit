@@ -36,6 +36,7 @@ class ETKMessageViewController: UIViewController {
     @IBOutlet weak var publishView: UIView!
     @IBOutlet weak var publishTextField: UITextField!
     @IBOutlet weak var publishQosSegmentControl: UISegmentedControl!
+    @IBOutlet weak var publishTopicButton: UIButton!
     
     
     // constriants
@@ -58,7 +59,7 @@ class ETKMessageViewController: UIViewController {
     open var meta: ETKConnMeta?
     
     lazy var mqtt: CocoaMQTT = {
-        let myCode = ShortCodeGenerator.getCode(length: 6)
+        let myCode = ETKTools.randomCode(length: 6)
         let clientID = "EMQ-iOS-Client-\(myCode)"
         
         // initialize mqtt
@@ -77,6 +78,10 @@ class ETKMessageViewController: UIViewController {
         // for split view controller
         navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         navigationItem.leftItemsSupplementBackButton = true
+        
+        // mask view gesture
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tapMaskView(_:)))
+        blackMask.addGestureRecognizer(tapGesture)
         
         //
         subscriptButton.isEnabled = false
@@ -218,6 +223,43 @@ class ETKMessageViewController: UIViewController {
         publishTextField.text = nil
     }
     
+    @IBAction func onPublishTopicButtonClicked(_ sender: UIButton) {
+        changePublishTitle(sender)
+    }
+    
+    func tapMaskView(_ sender: Any) {
+        animateBlurView(true)
+    }
+    
+    func changePublishTitle(_ button: UIButton) {
+        let alertController = UIAlertController(title: "Modify Topic for publishing", message: nil, preferredStyle: .alert)
+        
+        let currentTopic = self.topicTextField.text!
+        alertController.addTextField { (textField) in
+            textField.placeholder = "topic"
+            textField.text = currentTopic
+        }
+        
+        let textField = alertController.textFields?.first!
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action in
+            // ...
+        }
+        alertController.addAction(cancelAction)
+        
+        let OKAction = UIAlertAction(title: "OK", style: .default) { action in
+            button.setTitle(textField?.text, for: .normal)
+            if (button.title(for: .normal)?.isValidPublishTopic())! {
+                button.setTitleColor(#colorLiteral(red: 0.2876902819, green: 0.4403573275, blue: 0.5107608438, alpha: 1), for: .normal)
+            } else {
+                button.setTitleColor(#colorLiteral(red: 0.8824566007, green: 0.2664997876, blue: 0.3519365788, alpha: 1), for: .normal)
+            }
+        }
+        alertController.addAction(OKAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
     // MARK: - UX of blur view
     var panBeganConst: CGFloat = 0.0
     @IBAction func pan(_ sender: UIPanGestureRecognizer) {
@@ -270,6 +312,8 @@ class ETKMessageViewController: UIViewController {
         }, completion: { finished in
             self.blurViewCollapsed = toCollapse
         })
+        
+        blackMask.isUserInteractionEnabled = !toCollapse
     }
 }
 
@@ -286,7 +330,7 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     
     func mqtt(_ mqtt: CocoaMQTT, didConnectAck ack: CocoaMQTTConnAck) {
         print("didConnectAck: \(ack)，rawValue: \(ack.rawValue)")
-        handleView.backgroundColor = #colorLiteral(red: 0.3620333076, green: 0.8608141541, blue: 0.4826943278, alpha: 1)
+        handleView.backgroundColor = #colorLiteral(red: 0.1056478098, green: 0.71177876, blue: 0.650462091, alpha: 1)
         
         // change button UI
         connectButton.backgroundColor = #colorLiteral(red: 0.8824566007, green: 0.2664997876, blue: 0.3519365788, alpha: 1)
@@ -318,6 +362,14 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         topicTextField.isEnabled = false
         subscriptButton.setTitle(unsubscriptTitle, for: .normal)
         self.animateBlurView(true)
+        
+        // publish topic
+        publishTopicButton.setTitle(topicTextField.text!, for: .normal)
+        if (publishTopicButton.title(for: .normal)?.isValidPublishTopic())! {
+            publishTopicButton.setTitleColor(#colorLiteral(red: 0.2876902819, green: 0.4403573275, blue: 0.5107608438, alpha: 1), for: .normal)
+        } else {
+            publishTopicButton.setTitleColor(#colorLiteral(red: 0.8824566007, green: 0.2664997876, blue: 0.3519365788, alpha: 1), for: .normal)
+        }
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopic topic: String) {
@@ -384,22 +436,6 @@ extension ETKMessageViewController: UITableViewDelegate, UITableViewDataSource {
         return cell!
     }
     
-}
-
-
-struct ShortCodeGenerator {
-    
-    private static let base62chars = [Character]("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".characters)
-    private static let maxBase : UInt32 = 62
-    
-    static func getCode(withBase base: UInt32 = maxBase, length: Int) -> String {
-        var code = ""
-        for _ in 0..<length {
-            let random = Int(arc4random_uniform(min(base, maxBase)))
-            code.append(base62chars[random])
-        }
-        return code
-    }
 }
 
 
