@@ -121,7 +121,7 @@ class ETKMessageViewController: UIViewController {
             
             // conditions
             let keyboardUp = (endFrame?.origin.y)! < UIScreen.main.bounds.size.height
-            let shouldPubViewUp = keyboardUp && publishTextField.isFirstResponder
+            let shouldPubViewUp = keyboardUp && (publishTextField.isFirstResponder)
             
             // publish view move
             var const: CGFloat = 0
@@ -213,14 +213,18 @@ class ETKMessageViewController: UIViewController {
         }
     }
     
-    @IBAction func onPublishButtonClicked(_ sender: Any) {
-        let text = publishTextField.text!
-        let topic = topicTextField.text!
-        let qosRaw = publishQosSegmentControl.selectedSegmentIndex
-        let qos = CocoaMQTTQOS(rawValue: UInt8(qosRaw))!
-        
-        mqtt.publish(topic, withString: text, qos: qos)
-        publishTextField.text = nil
+    @IBAction func onPublishButtonClicked(_ sender: UIButton) {
+        if (publishTopicButton.title(for: .normal)?.isValidPublishTopic())! {
+            let text = publishTextField.text!
+            let topic = publishTopicButton.title(for: .normal)!
+            let qosRaw = publishQosSegmentControl.selectedSegmentIndex
+            let qos = CocoaMQTTQOS(rawValue: UInt8(qosRaw))!
+            
+            mqtt.publish(topic, withString: text, qos: qos)
+            publishTextField.text = nil
+        } else {
+            changePublishTitle(publishTopicButton)
+        }
     }
     
     @IBAction func onPublishTopicButtonClicked(_ sender: UIButton) {
@@ -234,7 +238,8 @@ class ETKMessageViewController: UIViewController {
     func changePublishTitle(_ button: UIButton) {
         let alertController = UIAlertController(title: "Modify Topic for publishing", message: nil, preferredStyle: .alert)
         
-        let currentTopic = self.topicTextField.text!
+        let currentTopic = button.title(for: .normal)!
+        
         alertController.addTextField { (textField) in
             textField.placeholder = "topic"
             textField.text = currentTopic
