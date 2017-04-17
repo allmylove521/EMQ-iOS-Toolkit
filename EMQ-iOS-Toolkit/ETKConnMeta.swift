@@ -84,9 +84,10 @@ final class ETKConnMetaManager: NSObject {
         sync()
     }
     
-    func remove(at indexPath: Int) {
-        metas.remove(at: indexPath)
+    func remove(at indexPath: Int) -> ETKConnMeta{
+        let meta = metas.remove(at: indexPath)
         sync()
+        return meta
     }
     
     func sync() {

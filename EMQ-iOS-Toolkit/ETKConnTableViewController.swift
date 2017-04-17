@@ -111,7 +111,8 @@ class ETKConnTableViewController: UITableViewController, UISplitViewControllerDe
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            ETKConnMetaManager.sharedManager.remove(at: indexPath.row)
+            let meta = ETKConnMetaManager.sharedManager.remove(at: indexPath.row)
+            metaToControllerMap.removeObject(forKey: meta)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view

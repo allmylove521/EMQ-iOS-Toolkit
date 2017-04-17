@@ -6,7 +6,8 @@ target 'EMQ-iOS-Toolkit' do
   use_frameworks!
 
   # Pods for EMQ-iOS-Toolkit
-  pod 'CocoaMQTT', '~>1.0.11'
+  # pod 'CocoaMQTT', '~>1.0.11'
+  pod 'CocoaMQTT', :path => '/Users/alex/Repos/work/CocoaMQTT'
 
   target 'EMQ-iOS-ToolkitTests' do
     inherit! :search_paths
