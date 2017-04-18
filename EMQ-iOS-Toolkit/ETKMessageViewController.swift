@@ -165,6 +165,7 @@ class ETKMessageViewController: UIViewController {
     }
     
     private func updateMetaFromUI() {
+        // update meta
         meta?.displayName = displayNameTextField.text!
         meta?.host = serverTextField.text!
         meta?.port = portTextField.text!
@@ -172,10 +173,15 @@ class ETKMessageViewController: UIViewController {
         meta?.password = passwordTextField.text!
         meta?.subscriptions = [topicTextField.text!]
         
+        // sync mqtt from meta
         mqtt.host = meta!.host
         mqtt.port = UInt16(meta!.port)!
         mqtt.username = meta!.userName
         mqtt.password = meta!.password
+        
+        // custom set
+        mqtt.logLevel = .debug
+        mqtt.keepAlive = 60
         
         meta?.sync()
     }
@@ -325,7 +331,6 @@ class ETKMessageViewController: UIViewController {
 
 extension ETKMessageViewController: CocoaMQTTDelegate {
     func mqtt(_ mqtt: CocoaMQTT, didConnect host: String, port: Int) {
-        print("didConnect \(host):\(port)")
     }
     
     // Optional ssl CocoaMQTTDelegate
@@ -334,7 +339,6 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didConnectAck ack: CocoaMQTTConnAck) {
-        print("didConnectAck: \(ack)，rawValue: \(ack.rawValue)")
         handleView.backgroundColor = #colorLiteral(red: 0.1056478098, green: 0.71177876, blue: 0.650462091, alpha: 1)
         
         // change button UI
@@ -347,15 +351,12 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
-        print("didPublishMessage with message: \(message.string)")
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishAck id: UInt16) {
-        print("didPublishAck with id: \(id)")
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16 ) {
-        print("didReceivedMessage: \(message.string) with id \(id)")
         messages.append(message)
         let indexPath = IndexPath(row: messages.count - 1, section: 0)
         messagesTableView.insertRows(at: [indexPath], with: .none)
@@ -363,7 +364,6 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopic topic: String) {
-        print("didSubscribeTopic to \(topic)")
         topicTextField.isEnabled = false
         subscriptButton.setTitle(unsubscriptTitle, for: .normal)
         self.animateBlurView(true)
@@ -378,21 +378,17 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopic topic: String) {
-        print("didUnsubscribeTopic to \(topic)")
         subscriptButton.setTitle(subscriptTitle, for: .normal)
         topicTextField.isEnabled = true
     }
     
     func mqttDidPing(_ mqtt: CocoaMQTT) {
-        print("didPing")
     }
     
     func mqttDidReceivePong(_ mqtt: CocoaMQTT) {
-        _console("didReceivePong")
     }
     
     func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError err: Error?) {
-        _console("mqttDidDisconnect")
         handleView.backgroundColor = #colorLiteral(red: 0.8824566007, green: 0.2664997876, blue: 0.3519365788, alpha: 1)
         animateBlurView(false)
         
@@ -403,10 +399,6 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         // subscript button enable
         subscriptButton.isEnabled = false
         subscriptButton.setTitle(subscriptTitle, for: .normal)
-    }
-    
-    func _console(_ info: String) {
-        print("Delegate: \(info)")
     }
 }
 
