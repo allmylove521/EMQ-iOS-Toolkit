@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "95A3D37647E7856297FC005F33A2258641E51CEC",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "6AC0722B7BE3FA27716D8CB58780284FED75DC3C" : 9223372036854775807,
+    "95A3D37647E7856297FC005F33A2258641E51CEC" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "EA0F3816-D9F1-443D-AD6C-C7F31FA04952",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "6AC0722B7BE3FA27716D8CB58780284FED75DC3C" : "CocoaMQTT\/",
+    "95A3D37647E7856297FC005F33A2258641E51CEC" : "EMQ-iOS-Toolkit\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "EMQ-iOS-Toolkit",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "EMQ-iOS-Toolkit.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/emqtt\/CocoaMQTT.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6AC0722B7BE3FA27716D8CB58780284FED75DC3C"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/emqtt\/EMQ-iOS-Toolkit.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "95A3D37647E7856297FC005F33A2258641E51CEC"
+    }
+  ]
+}

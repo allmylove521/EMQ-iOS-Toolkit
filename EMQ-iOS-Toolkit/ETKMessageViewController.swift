@@ -181,7 +181,9 @@ class ETKMessageViewController: UIViewController {
         
         // custom set
         mqtt.logLevel = .debug
+        mqtt.autoReconnect = true
         mqtt.keepAlive = 60
+        mqtt.autoReconnectTimeInterval = 5
         
         meta?.sync()
     }
