@@ -65,6 +65,13 @@ class ETKMessageViewController: UIViewController {
         // initialize mqtt
         let mqtt = CocoaMQTT(clientID: clientID, host: self.meta!.host, port: UInt16(self.meta!.port)!)
         mqtt.delegate = self
+        
+        // custom set
+        mqtt.logLevel = .debug
+        mqtt.autoReconnect = true
+        mqtt.keepAlive = 60
+        mqtt.autoReconnectTimeInterval = 5
+        
         return mqtt
     }()
     
@@ -178,12 +185,6 @@ class ETKMessageViewController: UIViewController {
         mqtt.port = UInt16(meta!.port)!
         mqtt.username = meta!.userName
         mqtt.password = meta!.password
-        
-        // custom set
-        mqtt.logLevel = .debug
-        mqtt.autoReconnect = true
-        mqtt.keepAlive = 60
-        mqtt.autoReconnectTimeInterval = 5
         
         meta?.sync()
     }
