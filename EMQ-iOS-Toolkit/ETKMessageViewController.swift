@@ -11,10 +11,6 @@ import CocoaMQTT
 
 class ETKMessageViewController: UIViewController {
     
-    // Constants
-    let subscriptTitle = "Subscript"
-    let unsubscriptTitle = "Unsubscript"
-    
     // views
     @IBOutlet weak var blackMask: UIView!
     @IBOutlet weak var blurView: UIVisualEffectView!
@@ -46,6 +42,10 @@ class ETKMessageViewController: UIViewController {
     
     // gestures
     @IBOutlet var panGestureRecognizer: UIPanGestureRecognizer!
+    
+    // Constants
+    let subscriptTitle = "Subscript"
+    let unsubscriptTitle = "Unsubscript"
     
     // to set blur view position
     private var topConstraintValueOriginal: CGFloat = 0.0
@@ -351,6 +351,9 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         // subscript button enable
         subscriptButton.isEnabled = true
         subscriptButton.setTitle(subscriptTitle, for: .normal)
+        
+        meta?.connected = true
+        meta?.updateAction?()
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
@@ -402,6 +405,9 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         // subscript button enable
         subscriptButton.isEnabled = false
         subscriptButton.setTitle(subscriptTitle, for: .normal)
+        
+        meta?.connected = false
+        meta?.updateAction?()
     }
 }
 

@@ -62,9 +62,27 @@ class ETKConnTableViewController: UITableViewController, UISplitViewControllerDe
         cell.textLabel!.text = name
         cell.detailTextLabel!.text = "topics: \(meta.subscriptions.description)"
         
+        // !!! add indicator view here
+        var view = cell.contentView.viewWithTag(1001) as UIView?
+        if view == nil {
+            view = UIView()
+            view!.layer.cornerRadius = 4
+            view!.backgroundColor = #colorLiteral(red: 0.4716343284, green: 0.4756989479, blue: 0.4795565605, alpha: 1)
+            view!.tag = 1001
+            
+            // auto layout
+            cell.contentView.addSubview(view!)
+            view!.translatesAutoresizingMaskIntoConstraints = false;
+            view!.widthAnchor.constraint(equalToConstant: 8).isActive = true
+            view!.heightAnchor.constraint(equalTo: (view?.widthAnchor)!).isActive = true
+            view!.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16).isActive = true
+            view!.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor).isActive = true
+        }
+        
         meta.updateAction = { [weak meta] () -> () in
             let name = (meta?.displayName.isEmpty)! ? meta?.host : meta?.displayName
             cell.textLabel!.text = name
+            view?.backgroundColor = (meta?.connected)! ? #colorLiteral(red: 0.1056478098, green: 0.71177876, blue: 0.650462091, alpha: 1) : #colorLiteral(red: 0.4716343284, green: 0.4756989479, blue: 0.4795565605, alpha: 1)
         }
         
         return cell
@@ -72,6 +90,13 @@ class ETKConnTableViewController: UITableViewController, UISplitViewControllerDe
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         collapseDetailViewController = false
+        
+        let meta = connections[indexPath.row]
+        
+        // stop table view automaticly change indicator's background color to clear color
+        let cell = tableView.cellForRow(at: indexPath)
+        let view = cell?.contentView.viewWithTag(1001) as UIView?
+        view?.backgroundColor = (meta.connected) ? #colorLiteral(red: 0.1056478098, green: 0.71177876, blue: 0.650462091, alpha: 1) : #colorLiteral(red: 0.4716343284, green: 0.4756989479, blue: 0.4795565605, alpha: 1)
         
         // If select adding cell
         if indexPath.row == connections.count {
@@ -81,22 +106,22 @@ class ETKConnTableViewController: UITableViewController, UISplitViewControllerDe
         }
         
         // create or reuse detail view controller
-        let meta = connections[indexPath.row]
-        var naviVC: UINavigationController? = nil
+        
+        var naviC: UINavigationController? = nil
         
         if let obj = metaToControllerMap.object(forKey: meta) {
-            naviVC = obj as? UINavigationController
+            naviC = obj as? UINavigationController
         } else {
             let sb = UIStoryboard(name: "Main", bundle: Bundle.main)
-            naviVC = sb.instantiateViewController(withIdentifier: "detailNavi") as? UINavigationController
-            metaToControllerMap.setObject(naviVC, forKey: meta)
+            naviC = sb.instantiateViewController(withIdentifier: "detailNavi") as? UINavigationController
+            metaToControllerMap.setObject(naviC, forKey: meta)
         }
         
-        let detailVC = naviVC!.viewControllers.first as! ETKMessageViewController
+        let detailVC = naviC!.viewControllers.first as! ETKMessageViewController
         
         detailVC.meta = meta
         
-        self.showDetailViewController(naviVC!, sender: self)
+        self.showDetailViewController(naviC!, sender: self)
     }
     
     // Override to support conditional editing of the table view.

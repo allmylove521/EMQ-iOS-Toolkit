@@ -15,6 +15,7 @@ class ETKConnMeta: NSObject, NSCoding {
     open var userName = ""
     open var password = ""
     open var subscriptions = [String]()
+    open var connected = false // only in runtime
     
     open var updateAction: (() -> ())?
     
