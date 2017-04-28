@@ -15,6 +15,7 @@ class ETKConnMeta: NSObject, NSCoding {
     open var userName = ""
     open var password = ""
     open var subscriptions = [String]()
+    open var connected = false // only in runtime
     
     open var updateAction: (() -> ())?
     
@@ -84,9 +85,10 @@ final class ETKConnMetaManager: NSObject {
         sync()
     }
     
-    func remove(at indexPath: Int) {
-        metas.remove(at: indexPath)
+    func remove(at indexPath: Int) -> ETKConnMeta{
+        let meta = metas.remove(at: indexPath)
         sync()
+        return meta
     }
     
     func sync() {

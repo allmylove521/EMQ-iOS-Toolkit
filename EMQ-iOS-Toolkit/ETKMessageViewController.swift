@@ -11,10 +11,6 @@ import CocoaMQTT
 
 class ETKMessageViewController: UIViewController {
     
-    // Constants
-    let subscriptTitle = "Subscript"
-    let unsubscriptTitle = "Unsubscript"
-    
     // views
     @IBOutlet weak var blackMask: UIView!
     @IBOutlet weak var blurView: UIVisualEffectView!
@@ -47,6 +43,10 @@ class ETKMessageViewController: UIViewController {
     // gestures
     @IBOutlet var panGestureRecognizer: UIPanGestureRecognizer!
     
+    // Constants
+    let subscriptTitle = "Subscript"
+    let unsubscriptTitle = "Unsubscript"
+    
     // to set blur view position
     private var topConstraintValueOriginal: CGFloat = 0.0
     private var topConstraintValueCollapse: CGFloat = 0.0
@@ -65,6 +65,13 @@ class ETKMessageViewController: UIViewController {
         // initialize mqtt
         let mqtt = CocoaMQTT(clientID: clientID, host: self.meta!.host, port: UInt16(self.meta!.port)!)
         mqtt.delegate = self
+        
+        // custom set
+        mqtt.logLevel = .debug
+        mqtt.autoReconnect = true
+        mqtt.keepAlive = 60
+        mqtt.autoReconnectTimeInterval = 20
+        
         return mqtt
     }()
     
@@ -165,6 +172,7 @@ class ETKMessageViewController: UIViewController {
     }
     
     private func updateMetaFromUI() {
+        // update meta
         meta?.displayName = displayNameTextField.text!
         meta?.host = serverTextField.text!
         meta?.port = portTextField.text!
@@ -172,6 +180,7 @@ class ETKMessageViewController: UIViewController {
         meta?.password = passwordTextField.text!
         meta?.subscriptions = [topicTextField.text!]
         
+        // sync mqtt from meta
         mqtt.host = meta!.host
         mqtt.port = UInt16(meta!.port)!
         mqtt.username = meta!.userName
@@ -344,6 +353,9 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         // subscript button enable
         subscriptButton.isEnabled = true
         subscriptButton.setTitle(subscriptTitle, for: .normal)
+        
+        meta?.connected = true
+        meta?.updateAction?()
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {
@@ -395,6 +407,8 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
         // subscript button enable
         subscriptButton.isEnabled = false
         subscriptButton.setTitle(subscriptTitle, for: .normal)
+        meta?.connected = false
+        meta?.updateAction?()
     }
 }
 
