@@ -76,7 +76,7 @@ class ETKMessageViewController: UIViewController {
     }()
     
     // message
-    var messages:[CocoaMQTTMessage] = []
+    var messages:[ETKMessageInfo] = []
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -231,8 +231,17 @@ class ETKMessageViewController: UIViewController {
             let qosRaw = publishQosSegmentControl.selectedSegmentIndex
             let qos = CocoaMQTTQOS(rawValue: UInt8(qosRaw))!
             
-            mqtt.publish(topic, withString: text, qos: qos)
+            let message = CocoaMQTTMessage(topic: topic, string: text, qos: qos)
+            mqtt.publish(message)
             publishTextField.text = nil
+            
+            
+            let info = ETKMessageInfo(message: message, date: Date(), type: .publish)
+            messages.append(info)
+            let indexPath = IndexPath(row: messages.count - 1, section: 0)
+            messagesTableView.insertRows(at: [indexPath], with: .none)
+            messagesTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+            
         } else {
             changePublishTitle(publishTopicButton)
         }
@@ -365,7 +374,10 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16 ) {
-        messages.append(message)
+        
+        let info = ETKMessageInfo(message: message, date: Date(), type: .receive)
+        messages.append(info)
+        
         let indexPath = IndexPath(row: messages.count - 1, section: 0)
         messagesTableView.insertRows(at: [indexPath], with: .none)
         messagesTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
@@ -430,16 +442,24 @@ extension ETKMessageViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "message")
         let message = messages[indexPath.row]
-        let content = message.string!
-        
+        let content = message.string
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
-        let timeString = formatter.string(from: Date())
+        let timeString = formatter.string(from: message.date!)
         
-        cell!.textLabel!.text = content
-        cell!.detailTextLabel!.text = "#\(message.topic) - \(timeString)"
+        var cellId = ""
+        if message.type == .publish {
+            cellId = "message_sent"
+        } else {
+            cellId = "message_received"
+        }
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId)
+        
+        
+        (cell?.viewWithTag(1001) as! UILabel).text = content
+        (cell?.viewWithTag(1002) as! UILabel).text = "#\(message.topic) - QoS\(message.qos.rawValue) - \(timeString)"
         return cell!
     }
     

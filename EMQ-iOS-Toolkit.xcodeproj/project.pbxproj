@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		098ABC57450ABD780F035930 /* Pods_EMQ_iOS_ToolkitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 492A6B2651507EBB702C4AAC /* Pods_EMQ_iOS_ToolkitTests.framework */; };
 		496823B3284F434CCBF78954 /* Pods_EMQ_iOS_Toolkit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85DFF4E7012E204B2E848D4C /* Pods_EMQ_iOS_Toolkit.framework */; };
+		FA3E258E1EB88E130085CA6E /* ETKMessageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E258D1EB88E130085CA6E /* ETKMessageInfo.swift */; };
 		FA5A55411E81203400E22DB0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5A55401E81203400E22DB0 /* AppDelegate.swift */; };
 		FA5A55461E81203400E22DB0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA5A55441E81203400E22DB0 /* Main.storyboard */; };
 		FA5A55481E81203400E22DB0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA5A55471E81203400E22DB0 /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 		7C4BDC7C39E629AC8E4DFB59 /* Pods-EMQ-iOS-Toolkit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EMQ-iOS-Toolkit.release.xcconfig"; path = "Pods/Target Support Files/Pods-EMQ-iOS-Toolkit/Pods-EMQ-iOS-Toolkit.release.xcconfig"; sourceTree = "<group>"; };
 		85DFF4E7012E204B2E848D4C /* Pods_EMQ_iOS_Toolkit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EMQ_iOS_Toolkit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		942DBF37EE30B0F5EF247145 /* Pods-EMQ-iOS-Toolkit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EMQ-iOS-Toolkit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EMQ-iOS-Toolkit/Pods-EMQ-iOS-Toolkit.debug.xcconfig"; sourceTree = "<group>"; };
+		FA3E258D1EB88E130085CA6E /* ETKMessageInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ETKMessageInfo.swift; sourceTree = "<group>"; };
 		FA5A553D1E81203400E22DB0 /* EMQ-iOS-Toolkit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "EMQ-iOS-Toolkit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA5A55401E81203400E22DB0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FA5A55451E81203400E22DB0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 			children = (
 				FAD148AB1E824AEF002587E0 /* ETKConnTableViewController.swift */,
 				FAD148AF1E825D4A002587E0 /* ETKMessageViewController.swift */,
+				FA3E258D1EB88E130085CA6E /* ETKMessageInfo.swift */,
 				FAD148AD1E824FEE002587E0 /* ETKConnMeta.swift */,
 				FA9BF5311E8F56CE00FA68F1 /* ETKTools.swift */,
 				FA5A55601E8248CD00E22DB0 /* Supporting Files */,
@@ -351,6 +354,7 @@
 			files = (
 				FA9BF5321E8F56CE00FA68F1 /* ETKTools.swift in Sources */,
 				FAD148AE1E824FEE002587E0 /* ETKConnMeta.swift in Sources */,
+				FA3E258E1EB88E130085CA6E /* ETKMessageInfo.swift in Sources */,
 				FAD148B01E825D4A002587E0 /* ETKMessageViewController.swift in Sources */,
 				FAD148AC1E824AEF002587E0 /* ETKConnTableViewController.swift in Sources */,
 				FA5A55411E81203400E22DB0 /* AppDelegate.swift in Sources */,
