@@ -20,6 +20,7 @@ class ETKMessageInfo: NSObject {
     var date: Date?
     var type: ETKMessageInfoType?
     var sent: Bool = false // only use for publishing message
+    var msgid: UInt16?
     
     var topic: String {
         return (message?.topic)!

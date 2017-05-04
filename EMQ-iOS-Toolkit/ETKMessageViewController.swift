@@ -232,11 +232,15 @@ class ETKMessageViewController: UIViewController {
             let qos = CocoaMQTTQOS(rawValue: UInt8(qosRaw))!
             
             let message = CocoaMQTTMessage(topic: topic, string: text, qos: qos)
-            mqtt.publish(message)
+            let msgid = mqtt.publish(message)
             publishTextField.text = nil
             
             
             let info = ETKMessageInfo(message: message, date: Date(), type: .publish)
+            info.msgid = msgid
+            if info.qos == .qos0 {
+                info.sent = true
+            }
             messages.append(info)
             let indexPath = IndexPath(row: messages.count - 1, section: 0)
             messagesTableView.insertRows(at: [indexPath], with: .none)
@@ -371,6 +375,21 @@ extension ETKMessageViewController: CocoaMQTTDelegate {
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishAck id: UInt16) {
+        markMessageSent(msgid: id)
+    }
+    
+    func mqtt(_ mqtt: CocoaMQTT, didPublishComplete id: UInt16) {
+        markMessageSent(msgid: id)
+    }
+    
+    private func markMessageSent(msgid: UInt16) {
+        for (index, element) in messages.enumerated() {
+            if element.msgid == msgid {
+                element.sent = true
+                messagesTableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+                break
+            }
+        }
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16 ) {
@@ -457,9 +476,13 @@ extension ETKMessageViewController: UITableViewDelegate, UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId)
         
+        let titleLabel = cell?.viewWithTag(1001) as! UILabel
+        let subtitleLabel = cell?.viewWithTag(1002) as! UILabel
+        titleLabel.text = content
+        subtitleLabel.text = "#\(message.topic) - QoS\(message.qos.rawValue) - \(timeString)"
         
-        (cell?.viewWithTag(1001) as! UILabel).text = content
-        (cell?.viewWithTag(1002) as! UILabel).text = "#\(message.topic) - QoS\(message.qos.rawValue) - \(timeString)"
+        titleLabel.textColor = message.sent ? #colorLiteral(red: 0.1056478098, green: 0.71177876, blue: 0.650462091, alpha: 1) : #colorLiteral(red: 0.4716343284, green: 0.4756989479, blue: 0.4795565605, alpha: 1)
+        
         return cell!
     }
     

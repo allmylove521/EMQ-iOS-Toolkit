@@ -22,7 +22,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="36" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="rtj-Cm-Iqg">
-                                <rect key="frame" x="0.0" y="108" width="375" height="511"/>
+                                <rect key="frame" x="0.0" y="108" width="375" height="469"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="message" textLabel="RmS-MC-pPt" detailTextLabel="Y8b-1e-hdt" style="IBUITableViewCellStyleSubtitle" id="Z1U-Ft-0E0">
@@ -65,7 +65,7 @@
                                                 <label opaque="NO" multipleTouchEnabled="YES" tag="1001" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dpv-AV-WQx">
                                                     <rect key="frame" x="15" y="7" width="37" height="14"/>
                                                     <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="12"/>
-                                                    <color key="textColor" red="0.39607843139999999" green="0.40000000000000002" blue="0.4039215686" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -195,12 +195,12 @@
                                     <constraint firstItem="MZZ-fr-DcJ" firstAttribute="centerY" secondItem="hwK-dH-co6" secondAttribute="centerY" id="usS-mr-fZn"/>
                                 </constraints>
                             </view>
-                            <view alpha="0.29999999999999999" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uQb-Ab-2Tp">
-                                <rect key="frame" x="0.0" y="600" width="375" height="667"/>
+                            <view alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uQb-Ab-2Tp">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             </view>
-                            <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Pd0-v3-tP4">
-                                <rect key="frame" x="0.0" y="600" width="375" height="300"/>
+                            <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pd0-v3-tP4">
+                                <rect key="frame" x="0.0" y="72" width="375" height="300"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Axo-AR-pWQ">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="300"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -444,7 +444,7 @@
                             <constraint firstItem="Pd0-v3-tP4" firstAttribute="width" secondItem="LxU-gW-nKk" secondAttribute="width" priority="999" id="JO9-eU-KmP"/>
                             <constraint firstItem="rtj-Cm-Iqg" firstAttribute="trailing" secondItem="hwK-dH-co6" secondAttribute="trailing" id="RnB-L3-MAO"/>
                             <constraint firstItem="uQb-Ab-2Tp" firstAttribute="leading" secondItem="hwK-dH-co6" secondAttribute="leading" id="UTQ-f2-aAF"/>
-                            <constraint firstItem="1FO-Xo-kkx" firstAttribute="top" secondItem="rtj-Cm-Iqg" secondAttribute="bottom" constant="48" id="Udg-oW-4nc"/>
+                            <constraint firstItem="1FO-Xo-kkx" firstAttribute="top" secondItem="rtj-Cm-Iqg" secondAttribute="bottom" constant="90" id="Udg-oW-4nc"/>
                             <constraint firstItem="uQb-Ab-2Tp" firstAttribute="trailing" secondItem="hwK-dH-co6" secondAttribute="trailing" id="Ujm-Pe-D1e"/>
                             <constraint firstAttribute="bottom" secondItem="uQb-Ab-2Tp" secondAttribute="bottom" id="Vc9-X0-CQU"/>
                             <constraint firstItem="rtj-Cm-Iqg" firstAttribute="leading" secondItem="hwK-dH-co6" secondAttribute="leading" id="bCo-ug-38g"/>
